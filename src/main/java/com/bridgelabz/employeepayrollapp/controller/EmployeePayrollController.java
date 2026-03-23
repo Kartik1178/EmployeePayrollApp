@@ -1,15 +1,22 @@
 package com.bridgelabz.employeepayrollapp.controller;
 
 /*
- * EmployeePayrollController.java - Section 2 UC2
+ * EmployeePayrollController.java - Section 2 UC3
  *
  * REST Controller for the Employee Payroll Application.
- * The Service Layer is now introduced and injected via @Autowired.
- * The Controller delegates all business logic to the Service Layer
- * and no longer creates Model objects directly - that is the job
- * of the Service Layer as per proper layered architecture.
+ * The Service Layer now stores, updates and deletes employee payroll
+ * data in memory as a List. The Controller delegates all operations
+ * to the Service Layer via @Autowired Dependency Injection.
+ * Full CRUD with in-memory persistence is now working end-to-end.
  *
  * Base URL : http://localhost:8080/employeepayrollservice
+ *
+ * CURL Commands:
+ *   GET ALL : curl localhost:8080/employeepayrollservice/ -w "\n"
+ *   GET ID  : curl localhost:8080/employeepayrollservice/get/1 -w "\n"
+ *   POST    : curl -X POST -H "Content-Type: application/json" -d "{\"name\":\"Lisa\",\"salary\":2000}" http://localhost:8080/employeepayrollservice/create -w "\n"
+ *   PUT     : curl -X PUT -H "Content-Type: application/json" -d "{\"name\":\"Lisa\",\"salary\":2000}" http://localhost:8080/employeepayrollservice/update/1 -w "\n"
+ *   DELETE  : curl -X DELETE localhost:8080/employeepayrollservice/delete/1 -w "\n"
  *
  * Author  : Kartikeya
  * Version : 1.0
@@ -32,6 +39,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 @RequestMapping("/employeepayrollservice")
@@ -41,15 +49,16 @@ public class EmployeePayrollController {
     @Autowired
     private IEmployeePayrollService employeePayrollService;
 
-    // UC2: GET all - returns service status confirming Service Layer is wired
+    // UC3: GET all - retrieves all employee payroll records from in-memory list via Service Layer
     @GetMapping("/")
-    public ResponseEntity<ResponseDTO> getEmployeePayrollServiceStatus() {
+    public ResponseEntity<ResponseDTO> getAllEmployeePayroll() {
+        List<EmployeePayroll> employeePayrollList = employeePayrollService.getAllEmployeePayroll();
         ResponseDTO responseDTO = new ResponseDTO(
-            "Employee Payroll Spring App is up - Service Layer introduced!", "Service OK");
+            "Get All Employee Payroll Data Success!", employeePayrollList);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    // UC2: GET by ID - delegates to Service Layer to retrieve employee payroll by ID
+    // UC3: GET by ID - retrieves a single employee payroll record from in-memory list by ID
     @GetMapping("/get/{id}")
     public ResponseEntity<ResponseDTO> getEmployeePayrollById(@PathVariable long id) {
         EmployeePayroll employeePayroll = employeePayrollService.getEmployeePayrollById(id);
@@ -58,7 +67,7 @@ public class EmployeePayrollController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    // UC2: POST - delegates to Service Layer to create a new employee payroll record
+    // UC3: POST - creates and stores a new employee payroll record in the in-memory list
     @PostMapping("/create")
     public ResponseEntity<ResponseDTO> createEmployeePayroll(
             @Valid @RequestBody EmployeePayrollDTO employeePayrollDTO) {
@@ -68,7 +77,7 @@ public class EmployeePayrollController {
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
-    // UC2: PUT - delegates to Service Layer to update an existing employee payroll record
+    // UC3: PUT - updates an existing employee payroll record in the in-memory list by ID
     @PutMapping("/update/{id}")
     public ResponseEntity<ResponseDTO> updateEmployeePayroll(
             @PathVariable long id, @Valid @RequestBody EmployeePayrollDTO employeePayrollDTO) {
@@ -78,7 +87,7 @@ public class EmployeePayrollController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    // UC2: DELETE - delegates to Service Layer to delete the employee payroll record
+    // UC3: DELETE - removes an employee payroll record from the in-memory list by ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ResponseDTO> deleteEmployeePayroll(@PathVariable long id) {
         employeePayrollService.deleteEmployeePayroll(id);
