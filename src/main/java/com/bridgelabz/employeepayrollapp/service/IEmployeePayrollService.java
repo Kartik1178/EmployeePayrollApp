@@ -5,9 +5,8 @@ package com.bridgelabz.employeepayrollapp.service;
  *
  * Service interface for the Employee Payroll Application.
  * Defines the contract for all business logic operations on
- * employee payroll data. The Controller depends on this interface
- * rather than the concrete implementation, following the Dependency
- * Inversion Principle and enabling easier testing and extensibility.
+ * employee payroll data including the new getAllEmployeePayroll method
+ * added in UC3 to support retrieving all records from in-memory storage.
  *
  * Author  : Kartikeya
  * Version : 1.0
@@ -16,8 +15,12 @@ package com.bridgelabz.employeepayrollapp.service;
 
 import com.bridgelabz.employeepayrollapp.dto.EmployeePayrollDTO;
 import com.bridgelabz.employeepayrollapp.model.EmployeePayroll;
+import java.util.List;
 
 public interface IEmployeePayrollService {
+
+    // Retrieves all employee payroll records from storage
+    List<EmployeePayroll> getAllEmployeePayroll();
 
     // Retrieves an employee payroll record by its unique ID
     EmployeePayroll getEmployeePayrollById(long id);
